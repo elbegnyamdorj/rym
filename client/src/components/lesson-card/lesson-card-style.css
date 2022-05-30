@@ -1,0 +1,9 @@
+.card-style {
+  width: 240px;
+  height: 150px;
+  margin: 20px;
+}
+h4,
+h1 {
+  color: #0275d8;
+}

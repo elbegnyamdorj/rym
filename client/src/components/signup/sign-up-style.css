@@ -1,0 +1,69 @@
+.input-box {
+  width: 100%;
+  padding: 20px;
+  margin: 8px 0;
+  border-radius: 10px;
+  box-sizing: border-box;
+  border: none;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.button {
+  background-color: #091327;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 250px;
+  border-radius: 10px;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+.signupbtn {
+  width: 250px;
+  padding: 14px 20px;
+  background-color: #ffffff;
+  color: black;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.signupbtn:hover {
+  background-color: #e0e0e0;
+}
+
+.containers {
+  padding: 50px;
+  width: 500px;
+  margin: 200px auto;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+.garchig {
+  font-weight: bold;
+  font-size: xx-large;
+  padding: 20px;
+}
+span.psw {
+  padding-top: 16px;
+  font-size: small;
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+  span.psw {
+    display: block;
+    float: none;
+  }
+  .cancelbtn {
+    width: 100%;
+  }
+}
