@@ -3,13 +3,17 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {BrowserRouter as Router} from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+
+import { MaterialUIControllerProvider } from 'context';
 ReactDOM.render(
   <React.StrictMode>
-    <Router>
-      <App />
-    </Router>
+    <MaterialUIControllerProvider>
+      <Router>
+        <App />
+      </Router>
+    </MaterialUIControllerProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
