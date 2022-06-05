@@ -59,6 +59,7 @@ import {
 import brandWhite from 'assets/images/logo-ct.png';
 import brandDark from 'assets/images/logo-ct-dark.png';
 import Lesson from 'comp/Lesson';
+import StudentTeamWork from 'comp/StudentTeamWork';
 
 function App() {
   const [controller, dispatch] = useMaterialUIController();
@@ -188,7 +189,7 @@ function App() {
             element={
               localStorage.getItem('access_token') ? (
                 localStorage.getItem('user_type_id') === '1' ? (
-                  <Navigate to='/lesson' />
+                  <Navigate to='/Lesson' />
                 ) : (
                   <Navigate to='/home' />
                 )
@@ -228,6 +229,7 @@ function App() {
           />
 
           <Route exact path={'/home'} element={<StudentHome />} />
+          <Route exact path={'/home/:id'} element={<StudentTeamWork />} />
           <Route
             exact
             path={'/lesson/subgroups/myteams'}

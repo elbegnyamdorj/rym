@@ -52,7 +52,7 @@ import Icon from '@mui/material/Icon';
 const routes = [
   {
     type: 'collapse',
-    name: 'Нүүр',
+    name: 'Хичээл',
     key: 'Lesson',
     icon: <Icon fontSize='small'>dashboard</Icon>,
     route: '/Lesson',

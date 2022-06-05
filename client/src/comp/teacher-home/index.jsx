@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { MAIN_URL } from '../../urls';
 import './teacher-home-style.css';
-import CardList from '../lesson-card-list';
 import { Link } from 'react-router-dom';
 // @mui material components
 import Grid from '@mui/material/Grid';

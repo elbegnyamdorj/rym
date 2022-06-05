@@ -20,11 +20,8 @@ import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
 import DataTable from 'examples/Tables/DataTable';
 
 // Data
-import authorsTableData from 'layouts/tables/data/authorsTableData';
-import projectsTableData from 'layouts/tables/data/projectsTableData';
 const Subgroup = () => {
   //   const { columns, rows } = authorsTableData();
-  const { columns: pColumns, rows: pRows } = projectsTableData();
   const { id, sg } = useParams();
   const location = useLocation();
   const { group_info } = location.state;
@@ -35,24 +32,6 @@ const Subgroup = () => {
     { Header: 'Имэйл', accessor: 'email', width: '30%' },
     { Header: 'Дундаж оноо', accessor: 'avg_value' },
   ];
-  const rows = [
-    {
-      name: 'Hanny Baniard',
-      position: 'Data Coordiator',
-      office: 'Baorixile',
-      age: 42,
-      startDate: '4/11/2021',
-      salary: '$474,978',
-    },
-    {
-      name: 'Lara Puleque',
-      position: 'Payment Adjustment Coordinator',
-      office: 'Cijangkar',
-      age: 47,
-      startDate: '8/2/2021',
-      salary: '$387,287',
-    },
-  ];
   const getStudentList = () => {
     axios
       .get(`${MAIN_URL}/subgroup/teammembers/`, {
@@ -62,7 +41,6 @@ const Subgroup = () => {
       })
       .then((res) => {
         const data = res.data;
-        // setMainList(data);
       });
   };
   const getStudentScore = () => {
@@ -74,27 +52,10 @@ const Subgroup = () => {
         },
       })
       .then((res) => {
-        let final_obj = {};
         const data = res.data;
-        console.log(data);
-        // console.log(mainList);
-        // let result = data.map((el) => ({ [el.team_name]: el }));
         const result = _.groupBy(data, 'team_name');
+        console.log(result);
         setMainList(result);
-        // console.log(result);
-        // var result = Object.keys(data).map((k) => ({ [k]: data[k] }));
-        // console.log(result);
-        // Object.keys(mainList).map((el) => {
-        //   let team = mainList[el];
-        //   console.log(team);
-        //   let combined = data.map((item) => ({
-        //     ...item,
-        //     team: team.filter((f) => f.id == item.id),
-        //   }));
-        //   final_obj[el] = combined;
-        // });
-
-        // setStudent_scores(final_obj);
       });
   };
   useEffect(() => {
