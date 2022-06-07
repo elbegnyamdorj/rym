@@ -15,6 +15,7 @@ import StudentTeam from './comp/student-team';
 import MyScore from './comp/my-score';
 import Subgroup from './comp/Subgroup';
 import RatingCriteria from './comp/rating-criteria-modal';
+import StudentProfile from 'comp/Profile';
 import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
 // @mui material components
 
@@ -206,6 +207,7 @@ function App() {
           <Route exact path={'/lesson/:id/:sg'} element={<Subgroup />} />
           <Route exact path={'/rating-criteria'} element={<RatingCriteria />} />
           <Route exact path={'/lesson/create'} element={<CreateLesson />} />
+          <Route exact path={'/profile'} element={<StudentProfile />} />
           <Route
             exact
             path={'/lesson/subgroups/create'}

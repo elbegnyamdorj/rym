@@ -119,6 +119,7 @@ const StudentTeamWork = () => {
       })
       .then((res) => {
         alert('Амжилттай хадгаллаа!');
+        window.location.reload();
       });
   };
   const handleValutation = (value, rc, team_member) => {
@@ -202,7 +203,7 @@ const StudentTeamWork = () => {
     },
   ];
   const columns = [
-    { Header: 'Нэр', accessor: 'first_name', width: '35%' },
+    { Header: 'Нэр', accessor: 'last_name', width: '35%' },
     { Header: 'Имэйл', accessor: 'email', width: '35%' },
     { Header: 'Үнэлгээ өгөх', accessor: 'action' },
   ];

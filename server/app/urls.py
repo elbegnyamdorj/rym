@@ -5,6 +5,7 @@ from .views import *
 
 urlpatterns = [
     path("user/create/", UserCreate.as_view(), name="create_user"),
+    path("user/get/", UserData.as_view(), name="create_user"),
     path("token/obtain/", ObtainTokenPair.as_view(), name="token_create"),
     path("token/refresh/", jwt_views.TokenRefreshView.as_view(), name="token_refresh"),
     path(
@@ -17,6 +18,7 @@ urlpatterns = [
     path("rating/check/", Rated.as_view(), name="create_rating"),
     path("rating/myhistory/", LessonRatings.as_view(), name="create_rating"),
     path("rating/all/", RatingsAll.as_view(), name="create_rating"),
+    path("rating/bydefaults/", RatingByDefaultRC.as_view(), name="create_rating"),
     path("teammember/create/", TeamMembers.as_view(), name="create_teammember"),
     path("subgroup/", SubGroups.as_view(), name="create_subgroup"),
     # path('subgroup/team/', Teams.as_view(), name='create_team'),

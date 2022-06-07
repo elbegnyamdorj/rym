@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './sign-up-style.css';
+// import './sign-up-style.css';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { MAIN_URL } from '../../urls';

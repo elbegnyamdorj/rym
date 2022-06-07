@@ -21,6 +21,13 @@ function configs(labels, datasets) {
     },
     options: {
       plugins: {
+        scale: {
+          ticks: {
+            beginAtZero: true,
+            max: 25,
+            min: 0,
+          },
+        },
         legend: {
           display: false,
         },

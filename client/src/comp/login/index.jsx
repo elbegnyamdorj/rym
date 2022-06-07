@@ -28,7 +28,7 @@ import BasicLayout from 'layouts/authentication/components/BasicLayout';
 // Images
 import bgImage from 'assets/images/bg-sign-in-basic.jpeg';
 // import bgImage from 'assets/images/wave.svg';
-import './login-style.css';
+// import './login-style.css';
 import jwt from 'jwt-decode';
 const Login = () => {
   const [email, setEmail] = useState('');

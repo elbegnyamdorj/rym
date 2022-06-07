@@ -10,6 +10,7 @@ from .models import (
     SubGroup,
     TeamMember,
     Users,
+    DefaultRatingCriteria,
 )
 
 
@@ -36,6 +37,12 @@ class UserSerializer(serializers.ModelSerializer):
         model = Users
         fields = ("id", "email", "password", "first_name", "last_name", "user_type_id")
         # extra_kwargs = {"password": {"write_only": True}}
+
+
+class DefaultRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DefaultRatingCriteria
+        fields = ("id", "rc_name", "description")
 
 
 class GroupSerializer(serializers.ModelSerializer):

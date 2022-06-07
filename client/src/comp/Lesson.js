@@ -105,6 +105,7 @@ const Lesson = (props) => {
       });
       clearInput();
       handleClose();
+      getAllSubgroupList();
     }
   }
   const clearInput = () => {

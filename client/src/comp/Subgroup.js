@@ -28,7 +28,7 @@ const Subgroup = () => {
   const [student_scores, setStudent_scores] = useState([]);
   const [mainList, setMainList] = useState([]);
   const columns = [
-    { Header: 'Нэр', accessor: 'first_name', width: '25%' },
+    { Header: 'Нэр', accessor: 'last_name', width: '25%' },
     { Header: 'Имэйл', accessor: 'email', width: '30%' },
     { Header: 'Дундаж оноо', accessor: 'avg_value' },
   ];

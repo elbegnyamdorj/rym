@@ -49,6 +49,16 @@ class UserCreate(APIView):
             user = Users.objects._create_user(**serializer.data)
             if user:
                 json = serializer.data
+                if json["user_type_id"] == 1:
+                    def_rc = DefaultRatingCriteria.objects.all().values()
+                    for i in def_rc:
+                        RatingCriteria.objects.create(
+                            rc_name=i["rc_name"],
+                            description=i["description"],
+                            is_default=True,
+                            from_default=True,
+                            teacher_id=Users.objects.get(email=json["email"]),
+                        )
                 return Response(json, status=status.HTTP_201_CREATED)
 
         elif Users.objects.filter(email=request.data["email"]).exists():
@@ -64,6 +74,21 @@ class UserCreate(APIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserData(APIView):
+    ### permission classuud daraa n ustgah ###
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = ()
+
+    def get(self, request, format="json"):
+        data = request.query_params["id"]
+        try:
+            users = Users.objects.get(id=data)
+        except Users.DoesNotExist:
+            users = None
+        serializer = UserSerializer(users)
+        return Response(serializer.data)
 
 
 class GroupMore(APIView):
@@ -103,12 +128,10 @@ class Groups(APIView):
 
     def post(self, request, format="json"):
         data = request.data
-        print(data)
         students = data["student_list"].strip()
         stud_list = list(students.split("\n"))
         stud_list = [i.strip() for i in stud_list]
         data.pop("student_list")
-        print(stud_list)
         serializer = GroupSerializer(data=data)
         if serializer.is_valid():
             group = serializer.save()
@@ -171,7 +194,6 @@ class GroupStudent(APIView):
             # students = Users.objects.values("first_name", "last_name", "email")
             students = Users.objects.filter(id__in=id_list)
             serializer = UserSerializer(students, many=True)
-            print(serializer.data)
         except GroupStudents.DoesNotExist:
             subgroups = None
             serializer = GroupStudentSerializer(subgroups, many=True)
@@ -195,9 +217,7 @@ class SubGroups(APIView):
 
     def post(self, request, format="json"):
         data = request.data
-        print(data)
         serializer = SubGroupSerializer(data=data)
-        print(serializer)
         if serializer.is_valid():
             subgroup = serializer.save()
 
@@ -300,7 +320,6 @@ class MyTeam(APIView):
                 ),
                 subgroup_id=subgroup_id,
             )
-            print(team)
             serializer = TeamMemberSerializer(team)
             data = serializer.data
             student_info = json.loads(json.dumps(data))
@@ -415,10 +434,64 @@ class GroupRatings(APIView):
             ).values()
             student_id = group_students[0]["student_id_id"]
             student_info = Users.objects.filter(id=student_id).values()
-            i["first_name"] = student_info[0]["first_name"]
+            i["last_name"] = student_info[0]["last_name"]
             i["email"] = student_info[0]["email"]
-            print(student_info)
         return Response(team_member)
+
+
+class RatingByDefaultRC(APIView):
+    ### permission classuud daraa n ustgah ###
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = ()
+
+    def get(self, request):
+        student_id = request.query_params["student_id"]
+        group_students = GroupStudents.objects.filter(student_id=student_id)
+        gs_serializer = GroupStudentSerializer(group_students, many=True)
+
+        group_id_list = [i["group_id"] for i in gs_serializer.data]
+        group_student_id_list = [i["id"] for i in gs_serializer.data]
+
+        subgroup = SubGroup.objects.filter(group_id__in=group_id_list)
+        sg_ser = SubGroupSerializer(subgroup, many=True)
+
+        team_member = TeamMember.objects.filter(
+            group_student_id__in=group_student_id_list
+        )
+        tm_ser = TeamMemberSerializer(team_member, many=True)
+        tm_id_list = [i["id"] for i in tm_ser.data]
+
+        def_rc = RatingCriteria.objects.filter(from_default=True).values()
+        def_rc_id_list = [i["id"] for i in def_rc]
+
+        rating = Ratings.objects.filter(
+            team_member_id__in=tm_id_list, rc_id__in=def_rc_id_list
+        ).values_list("rating_value")
+        rating_test = Ratings.objects.filter(
+            team_member_id__in=tm_id_list, rc_id__in=def_rc_id_list
+        )
+        r_ser = RatingSerializer(rating_test, many=True)
+        # define a fuction for key
+        def key_func(k):
+            return k["rc_name"]
+
+        # sort INFO data by 'company' key.
+        INFO = sorted(r_ser.data, key=key_func)
+        criteria_list = []
+        for key, value in groupby(INFO, key_func):
+            rating_list = [i["rating_value"] for i in value]
+            if len(rating_list) != 0:
+                avg = sum(rating_list) / len(rating_list)
+            else:
+                avg = "Үнэлгээгүй байна"
+            criteria_list.append({"rating_name": key, "rating_value": avg})
+        rating_list = [item for t in rating for item in t]
+
+        if len(rating_list) != 0:
+            avg = sum(rating_list) / len(rating_list)
+        else:
+            avg = "Үнэлгээгүй байна"
+        return Response({"main_avg": avg, "criteria_avg": criteria_list})
 
 
 class RatingsAll(APIView):
@@ -443,6 +516,9 @@ class RatingsAll(APIView):
         tm_ser = TeamMemberSerializer(team_member, many=True)
         tm_id_list = [i["id"] for i in tm_ser.data]
 
+        def_rc = RatingCriteria.objects.filter(from_default=False).values()
+        def_rc_id_list = [i["id"] for i in def_rc]
+
         rating = Ratings.objects.filter(team_member_id__in=tm_id_list).values_list(
             "rating_value"
         )
@@ -463,7 +539,7 @@ class RatingsAll(APIView):
                 avg = "Үнэлгээгүй байна"
             criteria_list.append({"rating_name": key, "rating_value": avg})
         rating_list = [item for t in rating for item in t]
-
+        print(rating_list)
         if len(rating_list) != 0:
             avg = sum(rating_list) / len(rating_list)
         else:

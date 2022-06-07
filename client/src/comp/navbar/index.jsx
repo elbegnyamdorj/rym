@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import './navbar-style.css';
+// import './navbar-style.css';
 import logo2 from './logo2.png';
 import axiosInstance from '../axiosApi';
 import { FaUserAlt } from 'react-icons/fa';
