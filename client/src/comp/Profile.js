@@ -2,19 +2,19 @@
 import Grid from '@mui/material/Grid';
 // Material Dashboard 2 React components
 import MDBox from 'components/MDBox';
-import MDTypography from 'components/MDTypography';
-
+import './main.css';
+import * as React from 'react';
 // Material Dashboard 2 React example components
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
 import DefaultProjectCard from 'examples/Cards/ProjectCards/DefaultProjectCard';
 import DataTable from 'examples/Tables/DataTable';
 import RadarChart from 'examples/Charts/RadarChart';
-
+import SummarizeIcon from '@mui/icons-material/Summarize';
 // Overview page components
 import Header from 'layouts/profile/components/Header';
 // Images
-import homeDecor1 from 'assets/images/home-decor-1.jpg';
+import logo from 'assets/images/logo2.png';
 import homeDecor2 from 'assets/images/home-decor-2.jpg';
 import homeDecor3 from 'assets/images/home-decor-3.jpg';
 import homeDecor4 from 'assets/images/home-decor-4.jpeg';
@@ -22,7 +22,17 @@ import team1 from 'assets/images/team-1.jpg';
 import team2 from 'assets/images/team-2.jpg';
 import team3 from 'assets/images/team-3.jpg';
 import team4 from 'assets/images/team-4.jpg';
+import { html2pdf } from 'html2pdf.js';
 
+import { Preview, print } from 'react-html2pdf';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { MAIN_URL } from 'urls';
@@ -30,15 +40,34 @@ import CustomStatisticsCard from 'examples/Cards/CustomStatiscsCard';
 import ReportsLineChart from 'examples/Charts/LineCharts/ReportsLineChart';
 import authorsTableData from 'layouts/tables/data/authorsTableData';
 import CustomTable from 'examples/Tables/CustomTable';
+import MDButton from 'components/MDButton';
+import { Dialog, Icon } from '@mui/material';
 function StudentProfile() {
   const [main_avg, setMain_avg] = useState(0);
   const [user_data, setUser_data] = useState({});
+  const [lessonList, setLessonList] = useState([]);
   const [criteria_avg, setCriteria_avg] = useState({});
+  const [def_rc_av, setDef_rc_av] = useState([]);
   const [user_id] = useState(localStorage.getItem('user_id'));
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  };
   useEffect(() => {
     getAlltimeRatings();
     getDefaultRatings();
     getUserData();
+    getLessonList();
   }, []);
   const { columns, rows } = authorsTableData();
   const sales = {
@@ -71,6 +100,7 @@ function StudentProfile() {
       })
       .then((res) => {
         const data = res.data;
+        setDef_rc_av(data.criteria_avg);
         let crit_avg = data.criteria_avg;
         let rc_name = [];
         let rc_value = [];
@@ -79,6 +109,18 @@ function StudentProfile() {
           rc_value.push(el.rating_value);
         });
         setCriteria_avg({ labels: rc_name, data: rc_value });
+      });
+  };
+  const getLessonList = () => {
+    axios
+      .get(`${MAIN_URL}/rating/myhistory/`, {
+        params: {
+          student_id: user_id,
+        },
+      })
+      .then((res) => {
+        const data = res.data;
+        setLessonList(data);
       });
   };
   const getUserData = () => {
@@ -105,6 +147,14 @@ function StudentProfile() {
         setMain_avg(data.main_avg);
       });
   };
+  const generatePdf = () => {
+    handleOpen();
+  };
+  const onDownload = () => {
+    handleClose();
+    const element = document.getElementById('invoice');
+    print('Үнэлгээний тайлан', 'jsx-template');
+  };
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -129,6 +179,14 @@ function StudentProfile() {
                   }}
                 />
               </MDBox>
+              <MDButton
+                variant='gradient'
+                color='success'
+                onClick={generatePdf}
+              >
+                <SummarizeIcon sx={{ fontWeight: 'bold' }} />
+                &nbsp;Тайлан татаж авах
+              </MDButton>
             </Grid>
             <Grid item xs={12} md={6} lg={8}>
               <Grid container>
@@ -165,108 +223,182 @@ function StudentProfile() {
             </Grid>
           </Grid>
         </MDBox>
-        {/* <CustomTable />
-        <DataTable
-          table={{ columns, rows }}
-          isSorted={false}
-          entriesPerPage={false}
-          showTotalEntries={false}
-          noEndBorder
-        /> */}
-        {/* <MDBox pt={2} px={2} lineHeight={1.25}>
-          <MDTypography variant='h6' fontWeight='medium'>
-            Projects
-          </MDTypography>
-          <MDBox mb={1}>
-            <MDTypography variant='button' color='text'>
-              Architects design houses
-            </MDTypography>
-          </MDBox>
-        </MDBox> */}
-        {/* <MDBox p={2}>
-          <Grid container spacing={6}>
-            <Grid item xs={12} md={6} xl={3}>
-              <DefaultProjectCard
-                image={homeDecor1}
-                label='project #2'
-                title='modern'
-                description='As Uber works through a huge amount of internal management turmoil.'
-                action={{
-                  type: 'internal',
-                  route: '/pages/profile/profile-overview',
-                  color: 'info',
-                  label: 'view project',
-                }}
-                authors={[
-                  { image: team1, name: 'Elena Morison' },
-                  { image: team2, name: 'Ryan Milly' },
-                  { image: team3, name: 'Nick Daniel' },
-                  { image: team4, name: 'Peterson' },
-                ]}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} xl={3}>
-              <DefaultProjectCard
-                image={homeDecor2}
-                label='project #1'
-                title='scandinavian'
-                description='Music is something that everyone has their own specific opinion about.'
-                action={{
-                  type: 'internal',
-                  route: '/pages/profile/profile-overview',
-                  color: 'info',
-                  label: 'view project',
-                }}
-                authors={[
-                  { image: team3, name: 'Nick Daniel' },
-                  { image: team4, name: 'Peterson' },
-                  { image: team1, name: 'Elena Morison' },
-                  { image: team2, name: 'Ryan Milly' },
-                ]}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} xl={3}>
-              <DefaultProjectCard
-                image={homeDecor3}
-                label='project #3'
-                title='minimalist'
-                description='Different people have different taste, and various types of music.'
-                action={{
-                  type: 'internal',
-                  route: '/pages/profile/profile-overview',
-                  color: 'info',
-                  label: 'view project',
-                }}
-                authors={[
-                  { image: team4, name: 'Peterson' },
-                  { image: team3, name: 'Nick Daniel' },
-                  { image: team2, name: 'Ryan Milly' },
-                  { image: team1, name: 'Elena Morison' },
-                ]}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} xl={3}>
-              <DefaultProjectCard
-                image={homeDecor4}
-                label='project #4'
-                title='gothic'
-                description='Why would anyone pick blue over pink? Pink is obviously a better color.'
-                action={{
-                  type: 'internal',
-                  route: '/pages/profile/profile-overview',
-                  color: 'info',
-                  label: 'view project',
-                }}
-                authors={[
-                  { image: team4, name: 'Peterson' },
-                  { image: team3, name: 'Nick Daniel' },
-                  { image: team2, name: 'Ryan Milly' },
-                  { image: team1, name: 'Elena Morison' },
-                ]}
-              />
-            </Grid>
-          </Grid>
-        </MDBox> */}
+        <h4 className='border-bottom my-5 p-2'>ХИЧЭЭЛҮҮД</h4>
+        {lessonList.map((i) => (
+          <div id='accordion' key={i.group_id}>
+            <div className='card'>
+              <div className='card-header' id='headingLes'>
+                <h5 className='mb-0'>
+                  <button
+                    className='btn btn-block w-100'
+                    data-toggle='collapse'
+                    data-target={'#' + i.lesson_name.replace(/ /g, '')}
+                    aria-expanded='true'
+                    aria-controls={i.lesson_name.replace(/ /g, '')}
+                  >
+                    <div className='container'>
+                      <div className='row'>
+                        <div className='col-sm-3 text-left'>
+                          {i.lesson_name}
+                        </div>
+                        <div className='col-sm-9'>
+                          <b> {i.rating_value}</b>
+                        </div>
+                        <div className='col-sm-1'></div>
+                      </div>
+                    </div>
+                  </button>
+                </h5>
+              </div>
+
+              <div
+                id={i.lesson_name.replace(/ /g, '')}
+                className='collapse'
+                aria-labelledby='headingLes'
+                data-parent='#accordion'
+              >
+                <div className='card-body'>
+                  <table className='table'>
+                    <thead>
+                      <tr>
+                        <th scope='col'>ШАЛГУУР</th>
+                        <th scope='col'>ОНОО</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {i.criteria_rating.map((i) => (
+                        <tr>
+                          <td>{i.rating_name}</td>
+                          <td>
+                            <b>{i.rating_value}</b>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  <div className='list-unstyled border rounded p-3 mt-2'>
+                    <h5>Давуу тал, авууштай зан чанар</h5>
+                    {i.good_comm.map((j) => (
+                      <p>{j}</p>
+                    ))}
+                  </div>
+                  <div className='list-unstyled border rounded p-3 mt-2'>
+                    <h5>
+                      Цаашид анхаарч, хөгжүүлвэл зохих ур чадвар, зан чанар
+                    </h5>
+                    {i.bad_comm.map((j) => (
+                      <p>{j}</p>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        <>
+          <Dialog
+            open={open}
+            onClose={handleClose}
+            aria-labelledby='alert-dialog-title'
+            aria-describedby='alert-dialog-description'
+            fullWidth
+          >
+            <DialogTitle id='alert-dialog-title'>
+              {'PDF тайлан татах'}
+            </DialogTitle>
+            <DialogContent>
+              <Preview id={'jsx-template'}>
+                <div id='invoice'>
+                  <div class='invoice-box'>
+                    <table cellpadding='0' cellspacing='0'>
+                      <tr class='top'>
+                        <td colspan='2'>
+                          <table>
+                            <tr>
+                              <td class='title'>
+                                <img src={logo} class='img-logo' />
+                              </td>
+
+                              <td>
+                                Дугаар #: R00001
+                                <br />
+                                Огноо: 2022/06/08
+                                <br />
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+
+                      <tr class='information'>
+                        <td colspan='2'>
+                          <table>
+                            <tr>
+                              <td>
+                                RYM Систем
+                                <br />
+                                Овог нэр:
+                                <br />
+                                Имейл хаяг:
+                              </td>
+
+                              <td>
+                                СЭЗИС
+                                <br />
+                                {user_data.first_name} {user_data.last_name}
+                                <br />
+                                {user_data.email}
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+
+                      <tr class='heading'>
+                        <td>Үндсэн шалгуур</td>
+
+                        <td>Дундаж оноо#</td>
+                      </tr>
+                      {def_rc_av.map((el) => (
+                        <tr class='details'>
+                          <td>{el.rating_name}</td>
+
+                          <td>{el.rating_value}</td>
+                        </tr>
+                      ))}
+
+                      <tr class='heading'>
+                        <td>Бусад шалгуур</td>
+
+                        <td>Дундаж оноо#</td>
+                      </tr>
+
+                      <tr class='item last'>
+                        <td>-</td>
+
+                        <td>-</td>
+                      </tr>
+
+                      <tr class='total'>
+                        <td></td>
+
+                        <td>Ерөнхий дундаж: {main_avg}</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </Preview>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>Болих</Button>
+              <Button onClick={onDownload} autoFocus>
+                Татах
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </>
       </Header>
     </DashboardLayout>
   );
